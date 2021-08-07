@@ -1,0 +1,47 @@
+{
+  "name": "loscreadoresbackend",
+  "version": "0.0.1",
+  "description": "BackEnd de la app los creadores",
+  "main": "./dist/main.js",
+  "scripts": {
+    "test": "cross-env NODE_ENV=test jest --verbose --silent --detectOpenHandles",
+    "start": "cross-env NODE_ENV=production node ./dist/main.js",
+    "dev:start": "cross-env NODE_ENV=development npx ts-node index.ts",
+    "build": "webpack --config webpack.prod.js"
+  },
+  "keywords": [
+    "backend",
+    "loscreadores"
+  ],
+  "author": "Tac Etarip",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.13",
+    "@types/jest": "^26.0.24",
+    "@types/node": "^16.4.13",
+    "@typescript-eslint/eslint-plugin": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.0",
+    "eslint": "^7.32.0",
+    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-jest": "^24.4.0",
+    "eslint-plugin-node": "^11.1.0",
+    "jest": "^27.0.6",
+    "supertest": "^6.1.4",
+    "ts-jest": "^27.0.4",
+    "ts-loader": "^9.2.5",
+    "ts-node": "^10.1.0",
+    "tslib": "^2.3.0",
+    "typescript": "^4.3.5",
+    "webpack": "^5.49.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-merge": "^5.8.0"
+  },
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1"
+  },
+  "engines": {
+    "node": "14.16.x"
+  }
+}
