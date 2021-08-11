@@ -1,4 +1,4 @@
-import { sumaTest } from '../index';
+import { sumaTest } from '../src/index';
 import supertest from 'supertest';
 
 test('Suma Correctamente', () => {

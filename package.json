@@ -6,7 +6,7 @@
   "scripts": {
     "test": "cross-env NODE_ENV=test jest --verbose --silent --detectOpenHandles",
     "start": "cross-env NODE_ENV=production node ./dist/main.js",
-    "dev:start": "cross-env NODE_ENV=development npx ts-node index.ts",
+    "dev:start": "cross-env NODE_ENV=development npx ts-node-dev ./src/index.ts | bunyan",
     "build": "webpack --config webpack.prod.js"
   },
   "keywords": [
@@ -16,6 +16,9 @@
   "author": "Tac Etarip",
   "license": "ISC",
   "devDependencies": {
+    "@types/bunyan": "^1.8.7",
+    "@types/compression": "^1.7.1",
+    "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.13",
     "@types/jest": "^26.0.24",
     "@types/node": "^16.4.13",
@@ -30,6 +33,7 @@
     "ts-jest": "^27.0.4",
     "ts-loader": "^9.2.5",
     "ts-node": "^10.1.0",
+    "ts-node-dev": "^1.1.8",
     "tslib": "^2.3.0",
     "typescript": "^4.3.5",
     "webpack": "^5.49.0",
@@ -37,9 +41,13 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "bunyan": "^1.8.15",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.5",
     "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "helmet": "^4.6.0"
   },
   "engines": {
     "node": "14.16.x"

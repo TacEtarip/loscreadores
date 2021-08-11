@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
     target: 'node',
-    entry: ['./index.ts'],
+    entry: ['./src/index.ts'],
     module: {
         rules: [
             {
@@ -13,7 +13,7 @@ module.exports = {
         ],
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.tsx', '.ts', '.js', 'json'],
     },
     output: {
         filename: 'main.js',
