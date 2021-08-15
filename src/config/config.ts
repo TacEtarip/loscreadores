@@ -11,12 +11,22 @@ const config = {
 	development: {
 		PORT: process.env.PORT,
 		link: 'http://localhost:5000/',
+        servidorSQL: process.env.SERVIDOR_SQL,
+        usuarioSQL: process.env.USUARIO_SQL,
+        passwordSQL: process.env.PASSWORD_SQL,
+        baseDeDatosSQL: process.env.BASE_DE_DATOS_NAME,
+        jwtKey: process.env.JWT_TOKEN_KEY,
 		log: (): bunyan => getLogger('DESARROLLO', version),
 	},
 
 	production: {
 		PORT: process.env.PORT,
 		link: 'http://localhost:5000/',
+        servidorSQL: process.env.SERVIDOR_SQL,
+        usuarioSQL: process.env.USUARIO_SQL,
+        passwordSQL: process.env.PASSWORD_SQL,
+        baseDeDatosSQL: process.env.BASE_DE_DATOS_NAME,
+        jwtKey: process.env.JWT_TOKEN_KEY,
         log: (): bunyan => getLogger('PRODUCCION', version),
 	},
 };

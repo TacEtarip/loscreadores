@@ -2,21 +2,38 @@ import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
 import * as express from 'express';
 import * as helmet from 'helmet';
+import { rutasHelpers } from './routes/helpers-routes';
+import { rutasLogin } from './routes/login-routes';
+import { Configuracion } from './lib/interfaces';
+import { ConeccionSQL } from './lib/connect-to-sql';
+import * as sql from 'mssql';
 
-const app = express();
+
+export const app = async (configENV: Configuracion): Promise<express.Express> => {
 
 
-app.use(helmet());
-app.use(compression())
-app.use(cookieParser());
+  const configuracionSQL = 
+  new ConeccionSQL(configENV.servidorSQL, configENV.usuarioSQL, configENV.passwordSQL, configENV.baseDeDatosSQL).getConfig;
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+  const app = express();
+  app.use(helmet());
+  app.use(compression())
+  app.use(cookieParser());
 
-app.get('/', (req: express.Request, res: express.Response) => {
-    res.send({
-      testMensaje: 'jola',
-    });
-});
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
-export default app;
+  const pool = await sql.connect(configuracionSQL);
+
+  const routesHelper = rutasHelpers(configENV, pool);
+  const routesLogin = rutasLogin(configENV, pool);
+
+  app.use(routesHelper.ruta, routesHelper.router);
+  app.use(routesLogin.ruta, routesLogin.router);
+
+  return app;
+}
+
+
+
+
