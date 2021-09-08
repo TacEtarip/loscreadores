@@ -25,13 +25,8 @@ export const helpersControladores = (configENV: Configuracion, pool: sql.Connect
     const insertarColor = async (req: Request, res: Response) => {
         try {
             const color = req.body.color as Color;
-            if (!comprobarColor(color)) {
-                const errorDeColor = new Error('Color Invalido');
-                return mandarError(errorDeColor, res, configENV, 400);
-            }
             await pool.request()
-            .input('R', sql.TinyInt, color.R).input('G', sql.TinyInt, color.G)
-            .input('B', sql.TinyInt, color.B).input('hex_code', sql.Char(6), color.hex_code)
+            .input('hex_code', sql.Char(6), color.hex_code)
             .input('nombre', sql.VarChar(20), color.nombre).execute(agregarColorProcedure);
             res.json({mensaje: 'Color Agregado'});
         } catch (error) {
@@ -42,13 +37,10 @@ export const helpersControladores = (configENV: Configuracion, pool: sql.Connect
     const modificarColor = async (req: Request, res: Response) => {
         try {
             const color = req.body.color as Color;
-            if (!comprobarColor(color)) {
-                const errorDeColor = new Error('Color Invalido');
-                return mandarError(errorDeColor, res, configENV, 400);
-            }
+
             await pool.request()
-            .input('codColor', sql.TinyInt, color.codColor).input('R', sql.TinyInt, color.R).input('G', sql.TinyInt, color.G)
-            .input('B', sql.TinyInt, color.B).input('hex_code', sql.Char(6), color.hex_code)
+            .input('codColor', sql.TinyInt, color.codColor)
+            .input('hex_code', sql.Char(6), color.hex_code)
             .input('nombre', sql.VarChar(20), color.nombre).execute(modificarColorProcedure);
             res.json({mensaje: 'Color Modificado'});
         } catch (error) {
@@ -76,7 +68,98 @@ export const helpersControladores = (configENV: Configuracion, pool: sql.Connect
         }
     };
 
-    return { getColores, insertarColor, modificarColor, getColor, insertarTrabajo };
+    const getDepartamentos = async (req: Request, res: Response) => {
+        try {
+            const result = await pool.request().execute('listado_departamentos');
+            if (result.recordset.length === 0) {
+                return mandarError(new Error('No se encontraron departamentos'), res, configENV, 401);
+            }
+            return res.json(result.recordset);
+        } catch (error) {
+            return mandarError(error, res, configENV, 500);
+        }
+    }
+
+    const getProvincias = async (req: Request, res: Response) => {
+        try {
+            const result = await pool.request().input('codDepartamento', sql.VarChar(2), req.body.codDepartamento)
+            .execute('listado_provincias');
+            if (result.recordset.length === 0) {
+                return mandarError(new Error('No se encontraron provincias'), res, configENV, 401);
+            }
+            return res.json(result.recordset);
+        } catch (error) {
+            return mandarError(error, res, configENV, 500);
+        }
+    }
+    
+    const getProveedores = async (req: Request, res: Response) => {
+        try {
+            const result = await pool.request()
+            .execute('get_proveedores');
+            return res.json(result.recordset || []);
+        } catch (error) {
+            return mandarError(error, res, configENV, 500);
+        }
+    }
+
+    const getDistritos = async (req: Request, res: Response) => {
+        try {
+            const result = await pool.request().input('codProvincia', sql.VarChar(4), req.body.codProvincia)
+            .execute('listado_distritos');
+            if (result.recordset.length === 0) {
+                return mandarError(new Error('No se encontraron distritos'), res, configENV, 401);
+            }
+            return res.json(result.recordset);
+        } catch (error) {
+            return mandarError(error, res, configENV, 500);
+        }
+    }
+
+    const getUnidadesDeMedida = async (req: Request, res: Response) => {
+        try {
+            const result = await pool.request()
+            .execute('get_unidades_de_medida');
+            return res.json(result.recordset);
+        } catch (error) {
+            return mandarError(error, res, configENV, 500);
+        }
+    }
+
+    const agregarMarca = async (req: Request, res: Response) => {
+        try {
+            if (!req.body.nombre) {
+                const error = new Error('No se entrego un nombre')
+                return mandarError(error, res, configENV, 500);
+            }
+            const result = await pool.request()
+            .input('nombre', sql.VarChar(20), req.body.nombre)
+            .input('logo', sql.VarChar(500), req.body.logo)
+            .input('info_extra', sql.VarChar(sql.MAX), req.body.info_extra)
+            .output('error', sql.Int)
+            .output('codMarca', sql.TinyInt)
+            .execute('add_marca')
+            if (result.output.error) {
+                const error = new Error('Esta Marca Ya Existe')
+                return mandarError(error, res, configENV, 500);
+            }
+            return res.json({codMarca: result.output.codMarca, nombre: req.body.nombre, logo: req.body.logo, info_extra: req.body.info_extra});
+        } catch (error) {
+            return mandarError(error, res, configENV, 500);
+        }
+    }
+
+    const getMarcas = async (req: Request, res: Response) => {
+        try {
+            const result = await pool.request().execute('get_marcas');
+            res.json(result.recordset);
+        } catch (error) {
+            return mandarError(error, res, configENV, 500);
+        }
+    };
+
+    return { getColores, insertarColor, modificarColor, getColor, insertarTrabajo, getMarcas, getProveedores,
+        getDepartamentos, getProvincias, getDistritos, getUnidadesDeMedida, agregarMarca };
 };
 
 const mandarError = (error: Error, res: Response, configENV: Configuracion, numeroError: number) => {
@@ -84,15 +167,6 @@ const mandarError = (error: Error, res: Response, configENV: Configuracion, nume
     return res.status(numeroError).json({error: error.message});
 };
 
-export const comprobarColor = (color: Color): boolean => {
-    if (color.R > 255 || color.G > 255 || color.B > 255) {
-        return false;
-    }
-    if (color.nombre.length > 20 || color.hex_code.length > 6) {
-        return false;
-    }
-    return true;
-};
 
 export const comprobarTrabajo = (trabajo: Trabajo): boolean => {
     if (trabajo.pago && trabajo.pago > 0) {

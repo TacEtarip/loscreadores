@@ -2,9 +2,6 @@ import Logger from 'bunyan';
 
 export interface Color {
     codColor?: number;
-    R: number;
-    G: number;
-    B: number;
     hex_code: string;
     nombre: string;
 }
@@ -17,6 +14,7 @@ export interface Configuracion {
     passwordSQL: string;
     baseDeDatosSQL: string;
     jwtKey: string;
+    tokenSUNAT: string;
     log: () => Logger;
 }
 
@@ -93,4 +91,18 @@ export interface Trabajo {
     pago: number;
     ultima_actualizacion?: Date;
     deleted?: boolean;
+}
+
+export interface TipoMaterial {
+    codTipoMaterial?: number;
+    nombre: string;
+    ultima_actualizacion: Date;
+    deleted: boolean;
+}
+
+export interface SubTipoMaterial {
+    codSubTipoMaterial?: number;
+    nombre: string;
+    ultima_actualizacion: Date;
+    deleted: boolean;
 }

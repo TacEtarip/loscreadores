@@ -4,22 +4,18 @@ import { Usuario, Configuracion, InfoContacto, PersonaNatural } from '../lib/int
 import { darDeAltaUsuarioSQL, darDeBajaUsuarioSQL, eliminarUsuarioSQL, getUsuarioSQL, insertarUsuario, reHabilitarUsuarioSQL, usuarioExisteLogin } from '../sql/sql-calls-strings';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
+import * as axios from 'axios';
 
 export const tiposBusqueda = ['M', 'S', 'U', 'D'];
 export const tiposEliminar = [0, 1, 2];
 const noCodERROR = new Error('Este Usuario No Existe');
-
-enum TiposUsuario {
-    Administrador = 0,
-    Personal =1
-}
-
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const loginControladores = (configENV: Configuracion, pool: sql.ConnectionPool) => {
 
     const registrar = async (req: Request, res: Response) => {
         try {
+
             const usuarioInfo = req.body.usuario as Usuario;
             const infoContactoInfo = req.body.infoContacto as InfoContacto;
             const personaNaturalInfo = req.body.personaNatural as PersonaNatural;
@@ -52,12 +48,12 @@ export const loginControladores = (configENV: Configuracion, pool: sql.Connectio
             .execute(insertarUsuario);
 
             if (result.output.codUsuario === 0) {
-                const errorDeDatos = new Error('Usuario Ya Existe');
+                const errorDeDatos = new Error('Usuario o usuario con este DNI ya existe');
                 return mandarError(errorDeDatos, res, configENV, 400);
             }
 
             if (result.output.error) {
-                const errorDeDatos = new Error(result.output.error === 2627 ? 'Datos Multiplicados' : `Error ${result.output.error}`);
+                const errorDeDatos = new Error(result.output.error === 2627 ? 'Datos De Contacto Multiplicados' : `Error ${result.output.error}`);
                 return mandarError(errorDeDatos, res, configENV, 400);
             }
             const usuarioRegistrado = result.recordset[0] as Usuario;
@@ -95,6 +91,38 @@ export const loginControladores = (configENV: Configuracion, pool: sql.Connectio
             return mandarError(error, res, configENV, 500);
         }
     };
+
+    const usuarioExiste = async (req: Request, res: Response) =>{
+        try {
+            console.log('d');
+            const result = await pool.request()
+            .input('tipoDeBusqueda', sql.Char(1), 'U')
+            .input('codUsuario', sql.Int, null)
+            .input('username', sql.VarChar(20), req.body.username)
+            .input('DNI', sql.Char(8), null)
+            .execute(getUsuarioSQL);
+
+            res.json(result.recordset.length === 0 ? {existe: false} : {existe: true});
+
+        } catch (error) {
+            console.log(error);
+            return mandarError(error, res, configENV, 500);
+        }
+    }
+
+    const validarDNI = async (req: Request, res: Response) => {
+        try {
+            console.log(req.body.dni);
+            const result = await axios.default.post('https://api.migo.pe/api/v1/dni', 
+            { token: configENV.tokenSUNAT, dni: req.body.dni });
+            res.json(result.data);
+        } catch (error) {
+            if (error.response.status) {
+                return res.json({success: false});
+            }
+            return mandarError(error, res, configENV, 500);
+        }
+    }
 
     const darDeAltaUsuario = async (req: Request, res: Response) => {
         try {
@@ -228,7 +256,7 @@ export const loginControladores = (configENV: Configuracion, pool: sql.Connectio
             .execute(usuarioExisteLogin);
             if (!(result.recordset.length === 1)) {
                 const errorNoUser = new Error('El usuario no existe');
-                return mandarError(errorNoUser, res, configENV, 404);
+                return mandarError(errorNoUser, res, configENV, 401);
             }
             if ((result.recordset[0] as Usuario).dado_alta === false) {
                 const errorNoAlta = new Error('El usuario no ha sido dado de alta');
@@ -247,13 +275,13 @@ export const loginControladores = (configENV: Configuracion, pool: sql.Connectio
             const usuario = res.locals.usuario as Usuario;
             if ((req.body.contrasena_enviada as string).length < 6) {
                 const errorContrasena = new Error('Contraseña Incorrecta');
-                return mandarError(errorContrasena, res, configENV, 401);
+                return mandarError(errorContrasena, res, configENV, 403);
             }
             const contrasena = usuario.contrasena.toString();
             const comparacion = await bcrypt.compare(req.body.contrasena_enviada, contrasena);
             if (!comparacion) {
                 const errorContrasena = new Error('Contraseña Incorrecta');
-                return mandarError(errorContrasena, res, configENV, 401);
+                return mandarError(errorContrasena, res, configENV, 403);
             }
             next();
         } catch (error) {
@@ -267,7 +295,7 @@ export const loginControladores = (configENV: Configuracion, pool: sql.Connectio
             usuario.contrasena_enviada = undefined;
             usuario.contrasena = undefined;
             const loginToken = 
-            jwt.sign({ aud: `${usuario.codUsuario} ${usuario.username} ${usuario.esAdmin ? TiposUsuario.Administrador : TiposUsuario.Personal}`, 
+            jwt.sign({ aud: `${usuario.codUsuario} ${usuario.username} ${usuario.esAdmin ? 'Administrador' : 'Personal'}`, 
             _id: usuario.codUsuario }, configENV.jwtKey);
             return res.json({usuario, loginToken});
         } catch (error) {
@@ -275,8 +303,32 @@ export const loginControladores = (configENV: Configuracion, pool: sql.Connectio
         }
     };
 
-    return { registrar, getUsuario, darDeAltaUsuario, darDeBajaUsuario, getDatosCompletosUsuario, enviarTokenLogin,
-        eliminarUsuario, comprobarUsuarioExisteLogin, comprobarContrasena, reHabilitarUsuario };
+    const loginRequired = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            if (!res.locals.usuario) {
+                const error = new Error('Contenido protegido')
+                return mandarError(error, res, configENV, 401);
+            }
+            next();
+        } catch (error) {
+            return mandarError(error, res, configENV, 500);
+        }
+    };
+
+    const adminLoginRequired = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            if (!res.locals.usuario || res.locals.usuario.aud.split(' ')[2] !== 'Administrador') {
+                const error = new Error('Contenido protegido')
+                return mandarError(error, res, configENV, 401);
+            }
+            next();
+        } catch (error) {
+            return mandarError(error, res, configENV, 500);
+        }
+    };
+
+    return { registrar, getUsuario, darDeAltaUsuario, darDeBajaUsuario, getDatosCompletosUsuario, enviarTokenLogin, validarDNI,
+        eliminarUsuario, comprobarUsuarioExisteLogin, comprobarContrasena, reHabilitarUsuario, usuarioExiste, loginRequired, adminLoginRequired };
 };
 
 const mandarError = (error: Error, res: Response, configENV: Configuracion, numeroError: number) => {

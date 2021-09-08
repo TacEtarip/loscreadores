@@ -4,7 +4,7 @@
   "description": "BackEnd de la app los creadores",
   "main": "./dist/main.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test jest --verbose --silent auth-control.test.ts",
+    "test": "cross-env NODE_ENV=test jest --verbose --silent materiales-control.test.ts",
     "start": "cross-env NODE_ENV=production node ./dist/main.js",
     "dev:start": "cross-env NODE_ENV=development npx ts-node-dev ./src/index.ts | bunyan",
     "build": "webpack --config webpack.prod.js"
@@ -20,6 +20,7 @@
     "@types/bunyan": "^1.8.7",
     "@types/compression": "^1.7.1",
     "@types/cookie-parser": "^1.4.2",
+    "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/jest": "^26.0.24",
     "@types/jsonwebtoken": "^8.5.4",
@@ -46,10 +47,12 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "bcrypt": "^5.0.1",
     "bunyan": "^1.8.15",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",

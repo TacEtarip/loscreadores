@@ -14,7 +14,13 @@ export const rutasHelpers = (configENV: Configuracion, pool: ConnectionPool): {r
         res.send({mensaje: 'Rutas de helpers'});
     });
 
+    router.get('/getUnidadesDeMedida', controladores.getUnidadesDeMedida);
+
     router.get('/getColores', controladores.getColores);
+
+    router.get('/getProveedores', controladores.getProveedores);
+
+    router.get('/getMarcas', controladores.getMarcas)
 
     router.get('/getColor/:codColor', controladores.getColor);
 
@@ -25,6 +31,16 @@ export const rutasHelpers = (configENV: Configuracion, pool: ConnectionPool): {r
     //* Trabajo
 
     router.post('/insertarTrabajo', controladores.insertarTrabajo);
+
+    //* Ubicacion
+
+    router.get('/getDepartamentos', controladores.getDepartamentos);
+
+    router.post('/getProvincias', controladores.getProvincias);
+
+    router.post('/getDistritos', controladores.getDistritos);
+
+    router.post('/agregarMarca', controladores.agregarMarca);
 
     return { router, ruta };
 };

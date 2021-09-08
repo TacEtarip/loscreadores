@@ -23,9 +23,11 @@ export const rutasLogin = (configENV: Configuracion, pool: ConnectionPool): {rou
 
     router.post('/eliminarUsuario', controladores.eliminarUsuario);
 
-    router.post('/login', controladores.comprobarUsuarioExisteLogin);
+    router.post('/registrar', controladores.adminLoginRequired, controladores.registrar);
 
-    router.post('/registrar', controladores.registrar);
+    router.post('/usuarioExiste', controladores.usuarioExiste);
+
+    router.post('/validarDNI', controladores.validarDNI);
 
     router.post('/login', controladores.comprobarUsuarioExisteLogin, controladores.comprobarContrasena, controladores.enviarTokenLogin);
 

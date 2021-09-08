@@ -16,6 +16,7 @@ const config = {
         passwordSQL: process.env.PASSWORD_SQL,
         baseDeDatosSQL: process.env.BASE_DE_DATOS_NAME,
         jwtKey: process.env.JWT_TOKEN_KEY,
+        tokenSUNAT: process.env.SUNAT_TOKEN,
 		log: (): bunyan => getLogger('DESARROLLO', version),
 	},
 
@@ -27,6 +28,7 @@ const config = {
         passwordSQL: process.env.PASSWORD_SQL,
         baseDeDatosSQL: process.env.BASE_DE_DATOS_NAME,
         jwtKey: process.env.JWT_TOKEN_KEY,
+        tokenSUNAT: process.env.SUNAT_TOKEN,
         log: (): bunyan => getLogger('PRODUCCION', version),
 	},
 };
