@@ -22,8 +22,8 @@ module.exports = {
     },
     rules: {
         "comma-dangle": ["error", "always-multiline"],
-		"comma-spacing": "error",
-		"comma-style": "error",
+		    "comma-spacing": "error",
+		    "comma-style": "error",
         "node/exports-style": ["error", "module.exports"],
         "node/file-extension-in-import": ["error", "never"],
         "node/prefer-global/buffer": ["error", "always"],
@@ -32,6 +32,14 @@ module.exports = {
         "node/prefer-global/url-search-params": ["error", "always"],
         "node/prefer-global/url": ["error", "always"],
         "node/prefer-promises/dns": "error",
-        "node/prefer-promises/fs": "error"
+        "node/prefer-promises/fs": "error",
+        "node/file-extension-in-import": [
+          "error",
+          "never",
+          {
+              "tryExtensions": [".js", ".json", ".node", ".ts", ".tsx"],
+              ".json": "always",
+          }
+      ]
     },
 };

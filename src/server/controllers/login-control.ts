@@ -1,10 +1,10 @@
-import * as sql from 'mssql';
+import sql from 'mssql';
 import { Response, Request, NextFunction } from 'express';
 import { Usuario, Configuracion, InfoContacto, PersonaNatural } from '../lib/interfaces';
 import { darDeAltaUsuarioSQL, darDeBajaUsuarioSQL, eliminarUsuarioSQL, getUsuarioSQL, insertarUsuario, reHabilitarUsuarioSQL, usuarioExisteLogin } from '../sql/sql-calls-strings';
-import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
-import * as axios from 'axios';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import axios from 'axios';
 
 export const tiposBusqueda = ['M', 'S', 'U', 'D'];
 export const tiposEliminar = [0, 1, 2];
@@ -113,7 +113,7 @@ export const loginControladores = (configENV: Configuracion, pool: sql.Connectio
     const validarDNI = async (req: Request, res: Response) => {
         try {
             console.log(req.body.dni);
-            const result = await axios.default.post('https://api.migo.pe/api/v1/dni', 
+            const result = await axios.post('https://api.migo.pe/api/v1/dni', 
             { token: configENV.tokenSUNAT, dni: req.body.dni });
             res.json(result.data);
         } catch (error) {

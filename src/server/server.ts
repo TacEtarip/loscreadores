@@ -1,16 +1,18 @@
-import * as compression from 'compression';
-import * as cookieParser from 'cookie-parser';
-import * as express from 'express';
-import * as helmet from 'helmet';
-import * as cors from 'cors';
-import { Response, Request, NextFunction } from 'express';
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import express, { Response, Request, NextFunction } from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
 import { rutasHelpers } from './routes/helpers-routes';
 import { rutasLogin } from './routes/login-routes';
 import { rutasMateriales } from './routes/materiales-routes';
 import { Configuracion } from './lib/interfaces';
 import { ConeccionSQL } from './lib/connect-to-sql';
-import * as sql from 'mssql';
-import * as jwt from 'jsonwebtoken';
+import sql from 'mssql';
+import jwt from 'jsonwebtoken';
+import morgan from 'morgan';
+import swaggerUI from 'swagger-ui-express';
+import swaggerDoc from '../documentation/swaggerDocument.json';
 
 
 export const app = async (configENV: Configuracion): Promise<express.Express> => {
@@ -24,7 +26,9 @@ export const app = async (configENV: Configuracion): Promise<express.Express> =>
   app.use(compression())
   app.use(cookieParser());
 
-  app.use(cors())
+  app.use(cors());
+
+  app.use(morgan(':method :url'));
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
@@ -62,6 +66,8 @@ export const app = async (configENV: Configuracion): Promise<express.Express> =>
   app.use(routesLogin.ruta, routesLogin.router);
   app.use(routesMateriales.ruta, routesMateriales.router);
 
+  app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));
+ 
   return app;
 }
 

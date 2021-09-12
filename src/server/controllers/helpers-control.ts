@@ -1,4 +1,4 @@
-import * as sql from 'mssql';
+import sql from 'mssql';
 import { Response, Request } from 'express';
 import { Color, Configuracion, Trabajo } from '../lib/interfaces';
 import { agregarColorProcedure, getColorProcedure, getTodosLosColores, modificarColorProcedure } from '../sql/sql-calls-strings';

@@ -1,4 +1,4 @@
-import * as sql from 'mssql';
+import sql from 'mssql';
 import { Response, Request } from 'express';
 import { Configuracion } from '../lib/interfaces';
 

@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
-import * as bunyan from 'bunyan';
+import bunyan from 'bunyan';
 
 const version = '0.0.1';
 

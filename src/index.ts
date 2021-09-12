@@ -1,6 +1,6 @@
-import * as http from 'http';
+import http from 'http';
 import { AddressInfo } from 'net';
-import * as throng from 'throng';
+import throng from 'throng';
 import config from './config/config';
 import { app } from './server/server';
 
