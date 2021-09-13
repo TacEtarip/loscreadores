@@ -1,6 +1,6 @@
 import sql from 'mssql';
 import { Response, Request } from 'express';
-import { Color, Configuracion, Trabajo } from '../lib/interfaces';
+import { Color, Configuracion, Departamento, Distrito, Marca, Proveedor, Provincia, Trabajo, UnidadDeMedida } from '../lib/interfaces';
 import { agregarColorProcedure, getColorProcedure, getTodosLosColores, modificarColorProcedure } from '../sql/sql-calls-strings';
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -8,7 +8,8 @@ export const helpersControladores = (configENV: Configuracion, pool: sql.Connect
     const getColores = async (req: Request, res: Response) => {
         try {
             const result = await pool.request().query(getTodosLosColores);
-            return res.json(result.recordset as Color[]);
+            const colores = result.recordset as Color[];
+            return res.json(colores);
         } catch (error) {
             mandarError(error, res, configENV, 500);
         }
@@ -62,7 +63,7 @@ export const helpersControladores = (configENV: Configuracion, pool: sql.Connect
             if (result.recordset.length !== 1) {
                 return mandarError(new Error('Error Al Insertar'), res, configENV, 500);
             }
-            res.json(result.recordset[0]);
+            res.json(result.recordset[0] as Trabajo);   
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }
@@ -74,7 +75,8 @@ export const helpersControladores = (configENV: Configuracion, pool: sql.Connect
             if (result.recordset.length === 0) {
                 return mandarError(new Error('No se encontraron departamentos'), res, configENV, 401);
             }
-            return res.json(result.recordset);
+            const departamentos = result.recordset as Departamento[];
+            return res.json(departamentos);
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }
@@ -87,7 +89,8 @@ export const helpersControladores = (configENV: Configuracion, pool: sql.Connect
             if (result.recordset.length === 0) {
                 return mandarError(new Error('No se encontraron provincias'), res, configENV, 401);
             }
-            return res.json(result.recordset);
+            const provincias = result.recordset as Provincia[];
+            return res.json(provincias);
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }
@@ -97,7 +100,8 @@ export const helpersControladores = (configENV: Configuracion, pool: sql.Connect
         try {
             const result = await pool.request()
             .execute('get_proveedores');
-            return res.json(result.recordset || []);
+            const proveedores = (result.recordset || []) as Proveedor[];
+            return res.json(proveedores);
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }
@@ -110,7 +114,8 @@ export const helpersControladores = (configENV: Configuracion, pool: sql.Connect
             if (result.recordset.length === 0) {
                 return mandarError(new Error('No se encontraron distritos'), res, configENV, 401);
             }
-            return res.json(result.recordset);
+            const distritos = (result.recordset || []) as Distrito[];
+            return res.json(distritos);
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }
@@ -120,7 +125,8 @@ export const helpersControladores = (configENV: Configuracion, pool: sql.Connect
         try {
             const result = await pool.request()
             .execute('get_unidades_de_medida');
-            return res.json(result.recordset);
+            const unidadesDeMedida = (result.recordset || []) as UnidadDeMedida[];
+            return res.json(unidadesDeMedida);
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }
@@ -152,7 +158,8 @@ export const helpersControladores = (configENV: Configuracion, pool: sql.Connect
     const getMarcas = async (req: Request, res: Response) => {
         try {
             const result = await pool.request().execute('get_marcas');
-            res.json(result.recordset);
+            const marcas = result.recordset as Marca[];
+            res.json(marcas);
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }

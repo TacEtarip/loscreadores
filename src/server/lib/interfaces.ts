@@ -6,6 +6,30 @@ export interface Color {
     nombre: string;
 }
 
+export interface UnidadDeMedida {
+    codUnidadDeMedida: string; 
+    nombre: string;
+    ultima_actualizacion: Date;
+}
+
+export interface Proveedor {
+    codProveedor?: number;
+    rating?: number;
+    activo: boolean;
+    deleted: boolean;
+    DNI?: string;
+    RUC?: string;
+    nombrePersonaJuridica?: string;
+    nombrePersonaNatural?: string;
+}
+
+export interface Marca {
+    codMarca?: string;
+    nombre: string;
+    logo?: string;
+    info_extra?: string;
+}
+
 export interface Configuracion {
     PORT: string,
     link: string;
@@ -102,7 +126,54 @@ export interface TipoMaterial {
 
 export interface SubTipoMaterial {
     codSubTipoMaterial?: number;
+    nombreTipo?: string;
+    codTipoMaterial?: number;
     nombre: string;
     ultima_actualizacion: Date;
     deleted: boolean;
+}
+
+export interface Material {
+    codMaterial?: number;
+    codSubTipoMaterial?: number;
+    nombreSubTipo?: string;
+    codTipoMaterial?: number;
+    nombreTipo?: string;
+    nombre: string;
+    ultima_actualizacion: Date;
+    deleted: boolean;
+    descripcion: string;
+    unidad_medida: string;
+    unidad_medida_uso: string;
+} 
+ 
+export interface MaterialDefinido {
+    codMaterialDefinido?: number;
+    codMaterial?: number;
+    nombreMaterial?: string;
+    codSubTipoMaterial?: number;
+    nombreSubTipo?: string;
+    codTipoMaterial?: number;
+    nombreTipo?: string;
+    codColor: number;
+    codMarca: number;
+    precio_por_unidad: number;
+    descripcion: string;
+    deleted: boolean;
+    ultima_actualizacion: string;
+    nombre: string;
+    nombreColor?: string;
+    hex_code?: string;
+    nombreMarca?: string;
+    unidad_medida_uso?: string;
+}
+
+export interface MaterialFisico {
+    codMaterialFisico: number;
+    codMaterialDefinido: number;
+    deleted: boolean;
+    ultima_actualizacion: Date;
+    cantidad_original: number;
+    cantidad_gastada: number;
+    dia_de_ingreso: Date;
 }

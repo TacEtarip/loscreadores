@@ -94,7 +94,6 @@ export const loginControladores = (configENV: Configuracion, pool: sql.Connectio
 
     const usuarioExiste = async (req: Request, res: Response) =>{
         try {
-            console.log('d');
             const result = await pool.request()
             .input('tipoDeBusqueda', sql.Char(1), 'U')
             .input('codUsuario', sql.Int, null)
@@ -105,14 +104,12 @@ export const loginControladores = (configENV: Configuracion, pool: sql.Connectio
             res.json(result.recordset.length === 0 ? {existe: false} : {existe: true});
 
         } catch (error) {
-            console.log(error);
             return mandarError(error, res, configENV, 500);
         }
     }
 
     const validarDNI = async (req: Request, res: Response) => {
         try {
-            console.log(req.body.dni);
             const result = await axios.post('https://api.migo.pe/api/v1/dni', 
             { token: configENV.tokenSUNAT, dni: req.body.dni });
             res.json(result.data);
@@ -263,7 +260,6 @@ export const loginControladores = (configENV: Configuracion, pool: sql.Connectio
                 return mandarError(errorNoAlta, res, configENV, 401);
             }
             res.locals.usuario = result.recordset[0];
-            console.log(res.locals.usuario.contrasena.toString());
             next();
         } catch (error) {
             return mandarError(error, res, configENV, 500);

@@ -1,6 +1,6 @@
 import sql from 'mssql';
 import { Response, Request } from 'express';
-import { Configuracion } from '../lib/interfaces';
+import { Configuracion, Material, MaterialDefinido, MaterialFisico, SubTipoMaterial, TipoMaterial } from '../lib/interfaces';
 
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -111,7 +111,8 @@ export const materialesControladores = (configENV: Configuracion, pool: sql.Conn
                 const errorDeDatos = new Error(result.output.error === 2627 ? 'Este nombre de material ya existe' : `Error ${result.output.error}`);
                 return mandarError(errorDeDatos, res, configENV, 400);
             } 
-            return res.json({message: 'Variante Añadido', nuevaVariante: result.recordset[0]});
+            const nuevaVariante =  result.recordset[0] as MaterialDefinido;
+            return res.json({message: 'Variante Añadido', nuevaVariante});
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }
@@ -143,7 +144,8 @@ export const materialesControladores = (configENV: Configuracion, pool: sql.Conn
                 const errorDeDatos = new Error(result.output.error === 2627 ? 'Este nombre de material ya existe' : `Error ${result.output.error}`);
                 return mandarError(errorDeDatos, res, configENV, 400);
             } 
-            return res.json({message: 'Producto Material Añadido', nuevoProductoMaterial: result.recordset[0]});
+            const nuevoProductoMaterial = result.recordset[0] as MaterialFisico;
+            return res.json({message: 'Producto Material Añadido', nuevoProductoMaterial});
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }
@@ -154,7 +156,8 @@ export const materialesControladores = (configENV: Configuracion, pool: sql.Conn
             const result = await pool.request()
             .input('codTipoMaterial', sql.SmallInt, null)
             .execute('get_tipo_material');
-            return res.json(result.recordset);
+            // * Lista de materiales
+            return res.json(result.recordset as TipoMaterial[]);
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }
@@ -170,7 +173,10 @@ export const materialesControladores = (configENV: Configuracion, pool: sql.Conn
                 const errorNoMaterial = new Error('Este tipo de material no existe');
                 return mandarError(errorNoMaterial, res, configENV, 404);
             }
-            return res.json({...result.recordsets[0][0],  subTipos: result.recordsets[1] || []}); 
+            const material = result.recordsets[0][0] as TipoMaterial;
+            const subTipos = (result.recordsets[1] || []) as SubTipoMaterial[];
+            // * Devuelve un tipo de material y su lista de sub-materiales
+            return res.json({...material,  subTipos}); 
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }
@@ -185,7 +191,9 @@ export const materialesControladores = (configENV: Configuracion, pool: sql.Conn
                 const errorNoMaterial = new Error('Este material no existe');
                 return mandarError(errorNoMaterial, res, configENV, 404);
             }
-            return res.json({...result.recordsets[0][0],  variantes: result.recordsets[1] || []}); 
+            const material = result.recordsets[0][0] as Material;
+            const variantes = ( result.recordsets[1] || []) as MaterialDefinido[];
+            return res.json({...material,  variantes}); 
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }
@@ -201,7 +209,8 @@ export const materialesControladores = (configENV: Configuracion, pool: sql.Conn
             .input('precioMax', sql.Decimal(19, 4), req.body.precioMax || null)
             .input('texto', sql.VarChar(40), req.body.texto || null)
             .execute('get_variantes_filtro');
-            return res.json({variantes: result.recordsets[0] || []}); 
+            const variantes = (result.recordsets[0] || []) as MaterialDefinido[];
+            return res.json({variantes}); 
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }
@@ -216,7 +225,8 @@ export const materialesControladores = (configENV: Configuracion, pool: sql.Conn
             .input('desde_fecha', sql.Date, req.body.desde_fecha || null)
             .input('hasta_fecha', sql.Date, req.body.hasta_fecha || null)
             .execute('get_material_fisico_filtro');
-            return res.json({materialesFisicos: result.recordsets[0] || []}); 
+            const materialesFisicos = (result.recordsets[0] || []) as MaterialFisico[];
+            return res.json({materialesFisicos}); 
         } catch (error) { 
             return mandarError(error, res, configENV, 500);
         }
@@ -231,7 +241,9 @@ export const materialesControladores = (configENV: Configuracion, pool: sql.Conn
                 const errorNoMaterial = new Error('Este material no existe');
                 return mandarError(errorNoMaterial, res, configENV, 404);
             }
-            return res.json({...result.recordsets[0][0],  materialesProductos: result.recordsets[1] || []}); 
+            const variante = result.recordsets[0][0] as MaterialDefinido;
+            const materialesProductos = (result.recordsets[1] || []) as MaterialFisico[];
+            return res.json({...variante,  materialesProductos}); 
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }
@@ -248,7 +260,9 @@ export const materialesControladores = (configENV: Configuracion, pool: sql.Conn
                 const errorNoMaterial = new Error('Este sub tipo de material no existe');
                 return mandarError(errorNoMaterial, res, configENV, 404);
             }
-            return res.json({...result.recordsets[0][0],  materiales: result.recordsets[1] || []}); 
+            const subTipo = result.recordsets[0][0] as SubTipoMaterial;
+            const materiales = (result.recordsets[1] || []) as Material[];
+            return res.json({...subTipo,  materiales}); 
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }
@@ -348,8 +362,8 @@ export const materialesControladores = (configENV: Configuracion, pool: sql.Conn
                 const errorDeDatos = new Error(`No se encontro la variacion`);
                 return mandarError(errorDeDatos, res, configENV, 400);
             }
-
-            return res.json({message: 'Variante Actualizada', nuevaVariante: result.recordset[0]});
+            const nuevaVariante = result.recordset[0] as MaterialDefinido;
+            return res.json({message: 'Variante Actualizada', nuevaVariante});
         } catch (error) {
             return mandarError(error, res, configENV, 500);
         }

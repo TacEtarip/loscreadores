@@ -2,7 +2,9 @@
 require('dotenv').config();
 import bunyan from 'bunyan';
 
-const version = '0.0.1';
+import pjs from '../../package.json';
+
+const { version } = pjs;
 
 const getLogger = (serviceName: string, serviceVersion: string) => 
 bunyan.createLogger({ name: `${serviceName}:${serviceVersion}` });

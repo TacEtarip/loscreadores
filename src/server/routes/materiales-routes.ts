@@ -20,7 +20,7 @@ export const rutasMateriales = (configENV: Configuracion, pool: ConnectionPool):
 
     router.post('/getMaterialFisicosFiltro', controladores.getMaterialFisicosFiltro);
 
-    router.post('/crearTipoMaterial', controladores.crearTipoMaterial);
+    router.post('/crearTipoMaterial', controladoresAuth.loginRequired, controladores.crearTipoMaterial);
 
     router.post('/crearSubTipoMaterial', controladores.crearSubTipoMaterial);
 
@@ -36,11 +36,11 @@ export const rutasMateriales = (configENV: Configuracion, pool: ConnectionPool):
 
     router.post('/crearMaterial', controladores.crearMaterial);
 
-    router.post('/editarTipo', controladores.editarTipo);
+    router.post('/editarTipo', controladoresAuth.loginRequired, controladores.editarTipo);
 
     router.get('/getAllTipos', controladoresAuth.loginRequired, controladores.getAllTipos);
  
-    router.get('/getTipo/:codTipoMaterial', controladores.getTipo);
+    router.get('/getTipo/:codTipoMaterial', controladoresAuth.loginRequired, controladores.getTipo);
 
     router.get('/getMaterial/:codMaterial', controladores.getMaterial);
 

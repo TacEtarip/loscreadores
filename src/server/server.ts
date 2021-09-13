@@ -33,13 +33,14 @@ export const app = async (configENV: Configuracion): Promise<express.Express> =>
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
+  
   app.use((req: Request, res: Response, next: NextFunction) => {
     if (req.headers && req.headers.authorization &&
       req.headers.authorization.split(' ')[0] === 'JWT') {
         const auth = req.headers.authorization;
+        // * JWT #token #codUsuario #username #tipo
         jwt.verify(auth.split(' ')[1], configENV.jwtKey, 
         {audience: `${auth.split(' ')[2]} ${auth.split(' ')[3]} ${auth.split(' ')[4]}`}, (err, decode) => {
-          console.log('qweqew');
           if (err) {
             res.locals.usuario = undefined;
             return res.status(401).json({ message: 'BAD USER' });

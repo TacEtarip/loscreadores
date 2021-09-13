@@ -3,49 +3,29 @@
     "info": {
         "license": {
             "name": "MIT",
-            "url": "https://github.com/TacEtarip/sirioinventarioserver/blob/master/LICENSE"
+            "url": "https://github.com/TacEtarip/loscreadores/blob/main/LICENSE"
         },
         "contact": {
             "email": "hu3rtas@outlook.com",
-            "name": "Luis Huertas",
-            "url": "https://github.com/TacEtarip/sirioinventarioserver"
+            "name": "Luis Huertas"
         },
-        "title":"Sirio Dinar Inventario API",
-        "version":"1.0",
-        "description": "Rest API para el uso del inventari de la empresa Sirio Dinar. Front End: https://inventario.siriodinar.com/"
+        "title":"Los Creadores, creador de prendas API",
+        "version":"0.0.1",
+        "description": "Rest API para el creador de prendas. UNDER DEVELOPMENT"
     },
     "servers": [
-        {"url":"https://inventario-sirio-dinar.herokuapp.com"},
-        {"url":"http://localhost:5000"}
+        {
+            "url":"http://localhost:2000"
+        }
     ],
     "tags": [
         {
-            "name": "tipos",
-            "description": "Manejar los tipos de items."
-        },
-        {
-            "name": "items",
-            "description": "Manejar los items"
-        },
-        {
-            "name": "ventas",
-            "description": "Manejar las ventas"
-        },
-        {
-            "name": "reportes",
-            "description": "Reportes sobre inventario."
-        },
-        {
-            "name": "organizar",
-            "description": "Organizar la presentación de los tipos, sub-tipo e items."
+            "name": "materiales",
+            "description": "Manejar los materiales textiles."
         },
         {
             "name": "utilidades",
-            "description": "Utilidades para el inventario."
-        },
-        {
-            "name": "auth",
-            "description": "Manejar la autenticación y usuarios."
+            "description": "Manejar utilidades."
         }
     ],
     "components": {
@@ -68,88 +48,78 @@
             "Error-401": {
                 "description": "No exite un token de autorización valido"
             },
+            "Error_400": {
+                "description": "Datos enviados de manera erronea o duplicada.",
+                "content": {
+                    "aplication/json":{
+                        "schema": {
+                            "$ref": "#/components/schemas/error400"
+                        }
+                    }
+                }
+            },
             "Succes": {
                 "description": "Exito al procesar request"
             }
         },
         "securitySchemes": {
-            "JWT TOKEN TRANSACCIONAL": {
-                "type": "http",
-                "scheme": "bearer",
-                "bearerFormat": "JWT #token #usuario #tipo"
-            },
             "JWT TOKEN ADMIN": {
                 "type": "http",
                 "scheme": "bearer",
-                "bearerFormat": "JWT #token #usuario #tipo"
+                "bearerFormat": "JWT #token #codUsuario #username #tipo"
             },
             "JWT TOKEN ALL": {
                 "type": "http",
                 "scheme": "bearer",
-                "bearerFormat": "JWT #token #usuario #tipo"
+                "bearerFormat": "JWT #token #codUsuario #username #tipo"
             }
         },
         "schemas": {
-            "error401": {
-                "description": "NO AUTORIZADO",
+            "error": {
                 "type": "object",
-                    "properties": {
-                        "message": {
-                            "type": "string"
-                        }
-            }
-            },
-            "tipo": {
-                "type": "object",
-                "required": ["name"],
+                "description": "Error General",
                 "properties": {
-                    "name": {
+                    "error": {
                         "type": "string",
-                        "description": "Nombre del tipo"
-                    },
-                
-                    "date":{
+                        "description": "Mensaje de error"
+                    }
+                }
+            },
+            "error401": {
+                "type": "object",
+                "description": "Error No Autorizado",
+                "properties": {
+                    "error": {
                         "type": "string",
-                        "description": "Fecha de creación del tipo",
-                        "readOnly": true
-                    },
-                
-                    "codigo": {
+                        "description": "Mensaje de error"
+                    }
+                }
+            },
+            "error400": {
+                "type": "object",
+                "description": "Request generada de manera incorrecta o datos repetidos",
+                "properties": {
+                    "error": {
                         "type": "string",
-                        "description": "Codigo del tipo"
-                    },
-                
-                    "subTipo": {
-                        "type": "array",
-                        "description": "Listado de sub-tipos",
-                        "items": {
-                            "type": "string",
-                            "description": "Nombre del sub-tipo"
-                        }
-                    },
-                
-                    "subTipoLink": {
-                        "type": "array",
-                        "description": "Listado las imagenes de los sub-tipos",
-                        "items": {
-                            "type": "string",
-                            "description": "URL de imagén del sub-tipo"
-                        }
-                    },
-                
-                    "deleted": {
-                        "type": "boolean"
-                    },
-                
-                    "link": {
-                        "type": "string",
-                        "description": "URL de imagén del tipo"
-                    },
-                
-                    "order": {
+                        "description": "Mensaje de error"
+                    }
+                }
+            },
+            "color": {
+                "type": "object",
+                "required": ["hex_code", "nombre"],
+                "properties": {
+                    "codColor": {
                         "type": "number",
-                        "default": -1,
-                        "description": "Orden en que se muestra el tipo"
+                        "description": "Codigo del color"
+                    },
+                    "hex_code": {
+                        "type": "string",
+                        "description": "Codigo hex del color"
+                    },
+                    "nombre": {
+                        "type": "string",
+                        "description": "Nombre del color"
                     }
                 },
                 "example": {
@@ -163,447 +133,442 @@
                     "order": 1
                 }
             },
-            "review": {
-                "type": "object",
-                "required": ["name"],
-                "properties": {
-                    "user": {
-                        "type": "string",
-                        "description": "Username de quien realizo la review"
-                    },
-                    "rating": {
-                        "type": "number",
-                        "description": "Rating del item de 1 a 5"
-                    },
-                
-                    "date": {
-                        "type": "string",
-                        "description": "Fecha de publicación de la review"
-                    }
-                }
-            },
-            "cantidadSC": {
-                "type": "object",
-                "required": ["name"],
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "Nombre de la sub cantidad"
-                    },
-                    "nameSecond": {
-                        "type": "string",
-                        "description": "Segundo nombre de la sub cantidad"
-                    },
-                    "cantidadDisponible": {
-                        "type": "number",
-                        "description": "Cantidad disponible al momento de la variación"
-                    },
-                    "cantidadVenta": {
-                        "type": "number",
-                        "description": "Cantidad"
-                    }
-                }
-            },
-            "order": {
-                "type": "object",
-                "required": ["name"],
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "Nombre especifico de la sub cantidad"
-                    },
-                    "nameSecond": {
-                        "type": "string",
-                        "description": "Segundo especifico nombre de la sub cantidad"
-                    },
-                    "cantidad": {
-                        "type": "number",
-                        "description": "Cantidad del subconteo"
-                    }
-                }
-            },
-            "subConteo": {
-                "type": "object",
-                "required": ["name"],
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "Nombre de la sub cantidad"
-                    },
-                    "nameSecond": {
-                        "type": "string",
-                        "description": "Segundo nombre de la sub cantidad"
-                    },
-                    "order": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/order"
-                        }
-                    }
-                }
-            },
-            "variacion": {
+            "usuario": {
+                "required": ["esAdmin", "username"],
                 "type": "object",
                 "properties": {
-                    "date": {
-                        "type": "string",
-                        "description": "Fecha de la variación ISO STRING",
-                        "readOnly": true
+                    "codUsuario": {
+                        "type": "number"
                     },
-                    "tipo": {
-                        "type": "boolean",
-                        "description": "Variación positiva o negativa"
-                    },
-                    "comentario": {
-                        "type": "string",
-                        "description": "Comentario sobre la variación"
-                    },
-                    "costoVar": {
-                        "type": "number",
-                        "description": "Costo de la variación"
-                    },
-                    "cantidad": {
-                        "type": "number",
-                        "description": "Cantidad de variación"
-                    },
-                    "cantidadSC": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/cantidadSC"
-                        }
-                    },
-                    "usuario": {
-                        "type": "string",
-                        "description": "Nombre del usuario que realizo la variación"
-                    }
-                }
-            },
-            "item": {
-                "type": "object",
-                "required": ["name", "priceIGV", "tipo"],
-                "properties": {
-                    "codigo": {
-                        "type": "string",
-                        "description": "Codigo del producto, es auto generado."
-                    },
-                    "name": {
-                        "type": "string",
-                        "description": "Nombre del producto"
-                    },
-                    "nameLowerCase": {
-                        "type": "string",
-                        "description": "Nombre en minusculas"
-                    },
-                    "priceIGV": {
-                        "type": "number",
-                        "description": " Precio del producto sin IGV"
-                    },
-                    "cantidad": {
-                        "type": "number",
-                        "description": "Cantidad de items disponibles del producto"
-                    },
-                    "subConteo": {
-                        "$ref": "#/components/schemas/subConteo"
-                    },
-                    "variaciones": {
-                        "type": "array",
-                        "items" : {
-                            "$ref": "#/components/schemas/variacion"
-                        }
-                    },
-                    "tipo": {
-                        "type": "string",
-                        "description": "Tipo al que pertenece el producto"
-                    },
-                    "subTipo": {
-                        "type": "string",
-                        "description": "Sub tipo al que pertenece el producto"
-                    },
-                    "unidadDeMedida": {
-                        "type": "string",
-                        "description": "Unidad de medida del item"
-                    },
-                    "oferta": {
-                        "type": "number",
-                        "description": "Oferta del item"
-                    },
-                    "date":{
-                        "type": "string",
-                        "description": "Fecha de creación del item ISO STRING",
-                        "readOnly": true
-                    },
-                
-                    "description":{
-                        "type": "string",
-                        "description": "Descripción del producto"
-                    },
-                
-                    "photo": {
-                        "type": "string",
-                        "description": "URL de la foto de este item"
-
-                    },
-                
-                    "ficha": {
-                        "type": "boolean",
-                        "description": "Tiene una ficha este producto?"
-
-                    },
-                
-                    "marca": {
-                        "type": "string",
-                        "description": "Marca del item"
-
-                    },
-                
-                    "costoPropio": {
-                        "type": "number",
-                        "description": "Costo de compra de item"
-                    },
-                
-                    "multiSearchParams": {
-                        "type": "string",
-                        "description": "Parametros por los cuales puede ser buscado este item",
-                        "deprecated": true
-                    },
-                
-                    "deleted": {
-                        "type": "boolean",
-                        "description": "Este item existe?"
-                    },
-                
-                    "tags": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "description": "Tags del item"
-                        }
-                    },
-                
-                    "caracteristicas": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "description": "Caracteristicas del item"
-                        }
-                    },
-                
-                    "orderNumber": {
-                        "type": "number",
-                        "description": "En que POS se muestra el nuemro"
-                    },
-                
-                    "reviews": {
-                        "type": "array",
-                        "items" : {
-                            "$ref": "#/components/schemas/review"
-                        }
-                    },
-                
-                    "googleCategory": {
-                        "type": "string",
-                        "description": "Categoria del item segun google",
-                        "default": "2047"
-                    }
-                },
-                "example": {
-                        "cantidad": 425,
-                        "subTipo": "LENTES SPIDER",
-                        "unidadDeMedida": "UND",
-                        "oferta": 0,
-                        "photo": "img-14SDLP4-1610836257167.jpeg",
-                        "ficha": false,
-                        "marca": "CLUTE",
-                        "deleted": false,
-                        "tags": [],
-                        "caracteristicas": [
-                          "Lente de policarbonato de alta transparencia.",
-                          "Proteccion de 99.9% de la radiacion UV.",
-                          "Tratamiento anti-empañante que reduce la obstrucción de la visibilidad en ambientes húmedos y cambios bruscos de temperatura.",
-                          "Tratamiento anti-rayadura que prolonga la vida útil del policarbonato."
-                        ],
-                        "orderNumber": -2,
-                        "googleCategory": "2047",
-                        "_id": "600368bd53a848001fc98ea4",
-                        "name": "Lentes Alpine",
-                        "priceIGV": 35,
-                        "description": "Alipme",
-                        "costoPropio": 27,
-                        "tipo": "Protec. Visual",
-                        "variaciones": [
-                          {
-                            "cantidad": 432,
-                            "tipo": true,
-                            "usuario": "desconocido",
-                            "date": "2021-01-16T22:29:17.386Z",
-                            "comentario": "new item",
-                            "costoVar": 10800,
-                            "cantidadSC": []
-                          },
-                          {
-                            "cantidad": 1,
-                            "tipo": false,
-                            "usuario": "desconocido",
-                            "date": "2021-02-17T22:49:35.594Z",
-                            "comentario": "venta|SD01-000333",
-                            "costoVar": 35,
-                            "cantidadSC": []
-                          },
-                          {
-                            "cantidad": 1,
-                            "tipo": true,
-                            "usuario": "desconocido",
-                            "date": "2021-02-17T23:01:24.220Z",
-                            "comentario": "anular|SD01-000333",
-                            "costoVar": 35,
-                            "cantidadSC": []
-                          },
-                          {
-                            "cantidad": 2,
-                            "tipo": false,
-                            "usuario": "desconocido",
-                            "date": "2021-06-08T22:44:08.841Z",
-                            "comentario": "quitar|Actualización",
-                            "costoVar": 54,
-                            "cantidadSC": []
-                          },
-                          {
-                            "cantidad": 1,
-                            "tipo": false,
-                            "usuario": "desconocido",
-                            "date": "2021-06-21T20:14:08.578Z",
-                            "comentario": "venta|SD01-001013",
-                            "costoVar": 35,
-                            "cantidadSC": []
-                          },
-                          {
-                            "cantidad": 1,
-                            "tipo": false,
-                            "usuario": "admin",
-                            "date": "2021-07-15T15:26:49.169Z",
-                            "comentario": "venta|SD01-001157",
-                            "costoVar": 25,
-                            "cantidadSC": []
-                          },
-                          {
-                            "cantidad": 2,
-                            "tipo": false,
-                            "usuario": "desconocido",
-                            "date": "2021-07-30T22:07:45.576Z",
-                            "comentario": "quitar|Actualización",
-                            "costoVar": 54,
-                            "cantidadSC": []
-                          },
-                          {
-                            "cantidad": 1,
-                            "tipo": false,
-                            "usuario": "admin",
-                            "date": "2021-08-27T22:15:32.180Z",
-                            "comentario": "venta|SD01-001438",
-                            "costoVar": 35,
-                            "cantidadSC": []
-                          }
-                        ],
-                        "date": "2021-01-16T22:29:17.383Z",
-                        "priceNoIGV": 29.66,
-                        "codigo": "14SDLP4",
-                        "nameLowerCase": "lentes alpine",
-                        "__v": 0,
-                        "reviews": []
-                      }
-            },
-            "marca": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "Nombre de la marca"
-                    },
-                    "codigo": {
-                        "type": "string",
-                        "description": "Codigo de la marca"
-                    },
-                    "ruc": {
+                    "DNI": {
                         "type": "string"
-                    }
-                }
-            },
-            "tag": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "Nombre del tag"
+                    },
+                    "username": {
+                        "type": "string"
+                    },
+                    "contrasena_enviada": {
+                        "type": "string"
+                    },
+                    "ultima_actualizacion": {
+                        "type": "string"
+                    },
+                    "fecha_creacion": {
+                        "type": "string"
                     },
                     "deleted": {
+                        "type": "boolean"
+                    },
+                    "dado_alta": {
+                        "type": "boolean"
+                    },
+                    "esAdmin": {
                         "type": "boolean"
                     }
                 }
             },
-            "user": {
-                "required": ["username", "email", "created_date"],
+            "persona_natural": {
+                "required": ["DNI", "nombre", "apellido_uno", "apellido_dos", "fecha_nacimiento"],
                 "type": "object",
                 "properties": {
-                    "username":{
-                        "type": "string"
-                    },
-                    "type": {
-                        "type": "string"
-                    },
-                    "created_date": {
-                        "type": "string"
-                    },
-                    "displayName": {
-                        "type": "string"
-                    },
-                    "email": {
-                        "type": "string"
-                    },
-                    "dirOne": {
-                        "type": "string"
-                    },
-                    "dirTwo": {
-                        "type": "string"
-                    },
-                    "reference": {
-                        "type": "string"
-                    },
-                    "ciudad": {
+                    "DNI": {
                         "type": "string"
                     },
                     "nombre": {
                         "type": "string"
                     },
-                    "apellido": {
+                    "apellido_uno": {
                         "type": "string"
                     },
-                    "nomape": {
+                    "apellido_dos": {
                         "type": "string"
                     },
-                    "googleCod": {
+                    "fecha_nacimiento": {
                         "type": "string"
                     },
-                    "documento": {
+                    "ultima_actualizacion": {
                         "type": "string"
                     },
-                    "tipoPersona": {
-                        "type": "string"
+                    "codInfoContacto": {
+                        "type": "number"
                     },
-                    "verified": {
+                    "deleted": {
                         "type": "boolean"
+                    }
+                }
+            },
+            "info_contacto": {
+                "type": "object",
+                "required": ["codDistrito", "celular", "direccion_linea_uno", "correo_electronico"],
+                "properties": {
+                    "codInfoContacto": {
+                        "type": "number"
+                    },
+                    "codDistrito": {
+                        "type": "string"
                     },
                     "celular": {
                         "type": "string"
                     },
-                    "ventaActiva": {
+                    "direccion_linea_uno": {
+                        "type": "string"
+                    },
+                    "direccion_linea_dos": {
+                        "type": "string"
+                    },
+                    "codigo_postal": {
+                        "type": "string"
+                    },
+                    "correo_electronico": {
+                        "type": "string"
+                    },
+                    "ultima_ctualizacion": {
+                        "type": "string",
+                        "description": "ISO DATE"
+                    },
+                    "deleted": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "distrito": {
+                "type": "object",
+                "required": ["codDistrito", "codProvincia", "codDepartamento", "nombre"],
+                "properties": {
+                    "codDistrito": {
+                        "type": "string"
+                    },
+                    "codProvincia": {
+                        "type": "string"
+                    },
+                    "codDepartamento": {
+                        "type": "string"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    }
+                }
+            },
+            "provincia": {
+                "type": "object",
+                "required": ["codProvincia", "codDepartamento", "nombre"],
+                "properties": {
+                    "codProvincia": {
+                        "type": "string"
+                    },
+                    "codDepartamento": {
+                        "type": "string"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    }
+                }
+            },
+            "departamento": {
+                "type": "object",
+                "required": ["codDepartamento", "codPais", "nombre"],
+                "properties": {
+                    "codDepartamento": {
+                        "type": "string"
+                    },
+                    "codPais": {
+                        "type": "string"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    }
+                }
+            },
+            "pais": {
+                "type": "string",
+                "required": ["codPais", "iso", "nombre", "nombre_show", "iso3", "numero_codigo", "codigo_telefono"],
+                "properties": {
+                    "codPais": {
+                        "type": "string"
+                    },
+                    "iso": {
+                        "type": "string"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    },
+                    "nombre_show": {
+                        "type": "string"
+                    },
+                    "iso3": {
+                        "type": "string"
+                    },
+                    "numero_codigo": {
+                        "type": "number"
+                    },
+                    "codigo_telefono": {
+                        "type": "number"
+                    }
+                }
+            },
+            "trabajo": {
+                "type":"object",
+                "required": ["titulo", "pago"],
+                "properties": {
+                    "codTrabajo": {
+                        "type": "number"
+                    },
+                    "titulo": {
+                        "type": "string"
+                    },
+                    "pago": {
+                        "type": "number"
+                    },
+                    "ultima_actualizacion": {
+                        "type": "string"
+                    },
+                    "deleted": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "tipo_material": {
+                "type": "object",
+                "required": ["nombre", "ultima_actualizacion", "deleted"],
+                "properties": {
+                    "codTipoMaterial": {
+                        "type": "number"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    },
+                    "ultima_actualizacion": {
+                        "type": "string"
+                    },
+                    "deleted": {
+                        "type": "boolean"
+                    },
+                    "subTipos": {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "$ref": "#/components/schemas/sub_tipo_material"
                         }
+                    }
+                }
+            },
+            "sub_tipo_material": {
+                "type": "object",
+                "required": ["nombre", "ultima_actualizacion", "deleted"],
+                "properties": {
+                    "codSubTipoMaterial": {
+                        "type": "number"
                     },
-                
-                    "carrito": {
+                    "nombreTipo": {
                         "type": "string"
+                    },
+                    "codTipoMaterial": {
+                        "type": "number"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    },
+                    "ultima_actualizacion": {
+                        "type": "string",
+                        "description": "ISO STRING"
+                    },
+                    "deleted": {
+                        "type": "boolean"
+                    },
+                    "materiales": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/material"
+                        }
+                    }
+                }
+            },
+            "material": {
+                "type": "object",
+                "required": ["nombre", "ultima_actualizacion", 
+                    "deleted", "descripcion", "unidad_medida", 
+                    "unidad_medida_uso"],
+                "properties": {
+                    "codMaterial": {
+                        "type": "number"
+                    },
+                    "codSubTipoMaterial": {
+                        "type": "number"
+                    },
+                    "nombreSubTipo": {
+                        "type": "string"
+                    },
+                    "codTipoMaterial": {
+                        "type": "number"
+                    },
+                    "nombreTipo": {
+                        "type": "string"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    },
+                    "ultima_actualizacion": {
+                        "type": "string",
+                        "description": "ISO STRING"
+                    },
+                    "deleted": {
+                        "type": "boolean"
+                    },
+                    "descripcion": {
+                        "type": "string"
+                    },
+                    "unidad_medida": {
+                        "type": "string"
+                    },
+                    "unidad_medida_uso": {
+                        "type": "string"
+                    },
+                    "variantes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/material_definido"
+                        }
+                    }
+                }
+            },
+            "material_definido": {
+                "type": "object",
+                "required": ["codColor", "codMarca", "precio_por_unidad", 
+                    "descripcion", "deleted", "ultima_actualizacion", "nombre"],
+                "properties": {
+                    "codMaterialDefinido": {
+                        "type": "number"
+                    },
+                    "codMaterial": {
+                        "type": "number"
+                    },
+                    "nombreMaterial": {
+                        "type": "string"
+                    },
+                    "codSubTipoMaterial": {
+                        "type": "number"
+                    },
+                    "nombreSubTipo": {
+                        "type": "string"
+                    },
+                    "codTipoMaterial": {
+                        "type": "number"
+                    },
+                    "nombreTipo": {
+                        "type": "string"
+                    },
+                    "codColor": {
+                        "type": "number"
+                    },
+                    "codMarca": {
+                        "type": "number"
+                    },
+                    "precio_por_unidad": {
+                        "type": "number"
+                    },
+                    "descripcion": {
+                        "type": "string"
+                    },
+                    "deleted": {
+                        "type": "boolean"
+                    },
+                    "ultima_actualizacion": {
+                        "type": "string"
+                    },
+                    "nombre": {
+                        "type": "string"
+                    },
+                    "nombreColor": {
+                        "type": "string"
+                    },
+                    "hex_code": {
+                        "type": "string"
+                    },
+                    "nombreMarca": {
+                        "type": "string"
+                    },
+                    "unidad_medida_uso": {
+                        "type": "string"
+                    },
+                    "materialesProductos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/material_fisico"
+                        }
+                    }
+                }
+            },
+            "filtro_material_definido": {
+                "type": "object",
+                "required": ["codMaterial"],
+                "properties": {
+                    "codMaterial": {
+                        "type": "number"
+                    },
+                    "codColor": {
+                        "type": "number"
+                    },
+                    "codMarca": {
+                        "type": "number"
+                    },
+                    "precioMin": {
+                        "type": "number"
+                    },
+                    "precioMax": {
+                        "type": "number"
+                    },
+                    "texto": {
+                        "type": "string"
+                    }
+                }
+            },
+            "filtro_material_fisico": {
+                "type": "object",
+                "required": ["codMaterialDefinido"],
+                "properties": {
+                    "codMaterialDefinido": {
+                        "type": "number"
+                    },
+                    "estado": {
+                        "type": "number",
+                        "enum": [1, 2, 3]
+                    },
+                    "codProveedor": {
+                        "type": "number"
+                    },
+                    "desde_fecha": {
+                        "type": "string"
+                    },
+                    "hasta_fecha": {
+                        "type": "string"
+                    }
+                }
+            },
+            "material_fisico": {
+                "type": "object",
+                "required": ["codMaterialFisico", "codMaterialDefinido", "deleted", 
+                    "ultima_actualizacion", "cantidad_original", "cantidad_gastada", "dia_de_ingreso"],
+                "properties": {
+                    "codMaterialFisico": {
+                        "type": "number"
+                    },
+                    "codMaterialDefinido": {
+                        "type": "number"
+                    },
+                    "deleted": {
+                        "type": "boolean"
+                    },
+                    "ultima_actualizacion": {
+                        "type": "string",
+                        "description": "ISO STRING"
+                    },
+                    "cantidad_original": {
+                        "type": "number"
+                    },
+                    "cantidad_gastada": {
+                        "type": "number"
+                    },
+                    "dia_de_ingreso": {
+                        "type": "string",
+                        "description": "ISO STRING"
                     }
                 }
             },
@@ -638,249 +603,152 @@
                     }
                 }
             },
-            "document": {
+            "unidad_de_medida": {
                 "type": "object",
+                "required": ["codUnidadDeMedida", "nombre", "ultima_actualizacion"],
                 "properties": {
-                    "type": {
+                    "codUnidadDeMedida": {
+                        "type": "string"
+                    } ,
+                    "nombre": {
                         "type": "string"
                     },
-                
-                    "name": {
-                        "type": "string"
-                    },
-                
-                    "codigo": {
-                        "type": "number"
-                    },
-                
-                    "direccion": {
+                    "ultima_actualizacion": {
                         "type": "string"
                     }
                 }
             },
-            "itemvendido": {
+            "proveedor": {
                 "type": "object",
+                "required": ["activo", "deleted"],
                 "properties": {
-                    "codigo": {
-                        "type": "string"
-                    },
-                
-                    "tipo": {
-                        "type": "string"
-                    },
-                
-                    "name": {
-                        "type": "string"
-                    },
-                
-                    "descripcion": {
-                        "type": "string"
-                    },
-                
-                    "priceIGV": {
+                    "codProveedor": {
                         "type": "number"
                     },
-                
-                    "priceNoIGV": {
+                    "rating": {
                         "type": "number"
                     },
-                
-                    "priceCosto": {
-                        "type": "number"
+                    "activo": {
+                        "type": "boolean"
                     },
-                
-                    "cantidad": {
-                        "type": "number"
+                    "deleted": {
+                        "type": "boolean"
                     },
-                
-                    "cantidadSC": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/cantidadSC"
-                        }
-                    },
-                
-                    "totalPrice": {
-                        "type": "number"
-                    },
-                
-                    "totalPriceNoIGV": {
-                        "type": "number"
-                    },
-                
-                    "unidadDeMedida": {
+                    "DNI": {
                         "type": "string"
                     },
-                
-                    "photo": {
+                    "RUC": {
                         "type": "string"
                     },
-                
-                    "ventaCod": {
+                    "nombrePersonaJuridica": {
+                        "type": "string"
+                    },
+                    "nombrePersonaNatural": {
                         "type": "string"
                     }
                 }
             },
-            "venta": {
+            "marca": {
                 "type": "object",
+                "required": ["nombre"],
                 "properties": {
-                    "codigo": {
+                    "codMarca": {
                         "type": "string"
                     },
-                
-                    "totalPrice": {
-                        "type": "number"
-                    },
-                
-                    "totalPriceNoIGV": {
-                        "type": "number"
-                    },
-                
-                    "estado": {
+                    "nombre": {
                         "type": "string"
                     },
-                
-                    "documento": {
-                        "$ref": "#/components/schemas/document"
-                    },
-                
-                    "itemsVendidos": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/itemvendido"
-                        }
-                    },
-                
-                    "date":{
+                    "logo": {
                         "type": "string"
                     },
-                
-                    "vendedor": {
+                    "info_extra": {
                         "type": "string"
-                    },
-                
-                    "tipoVendedor": {
-                        "type": "string"
-                    },
-                
-                    "medio_de_pago": {
-                        "type": "string"
-                    },
-                
-                    "linkComprobante": {
-                        "type": "string"
-                    },
-                
-                    "serie": {
-                        "type": "string"
-                    },
-                
-                    "tipoComprobante": {
-                        "type": "string"
-                    },
-                
-                    "numero": {
-                        "type": "number"
-                    },
-                
-                    "cliente_email": {
-                        "type": "string"
-                    },
-                
-                    "guia_serie": {
-                        "type": "string"
-                    },
-                
-                    "guia_numero": {
-                        "type": "string"
-                    },
-                
-                    "guia": {
-                        "type": "boolean"
-                    },
-                
-                    "guia_link": {
-                        "type": "string"
-                    },
-                
-                    "carrito_venta": {
-                        "type": "boolean"
-                    },
-                
-                    "estado_carrito_comprando": {
-                        "type": "boolean"
                     }
                 }
             }
         }
     },
+    "security": [
+        {
+            "JWT TOKEN ALL": []
+        }
+    ],
     "paths": {
-        "/inventario/getTipos": {
+        "/materiales/getAllTipos": {
             "get": {
-                "tags": ["tipos"],
-                "summary": "Optener todos los tipos",
-                "responses": {
-                    "200": {
-                        "description": "Ok",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/tipo"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/inventario/getTipo/{nameTipo}": {
-            "get": {
-                "tags": ["tipos"],
-                "summary": "Obtener un tipo en especifico",
-                "parameters": [{
-                    "name": "nameTipo",
-                    "in": "path",
-                    "required": true,
-                    "allowEmptyValue": false,
-                    "example": "Pro. Respiratoria",
-                    "schema": {
-                        "type": "string",
-                        "description": "Nombre del tipo que deseamos"
-                    }
-                }],
+                "summary": "Obtener todos los tipos de material.",
+                "tags": ["materiales"],
                 "responses": {
                     "200": {
                         "description": "Ok",
                         "content": {
                             "aplication/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/tipo"
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/tipo_material"
+                                    }
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
                     }
                 }
             }
         },
-        "/inventario/addTipo": {
+        "/materiales/getTipo/{codTipoMaterial}": {
+            "get": {
+                "summary": "Obtener un tipo de material, con sus sub-tipos de material.",
+                "tags": ["materiales"],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "allowEmptyValue": false,
+                        "name": "codTipoMaterial",
+                        "schema": {
+                            "type": "number",
+                            "description": "Codigo del tipo de material requerido"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "aplication/json": {
+                                "schema": {
+                                   "$ref": "#/components/schemas/tipo_material"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
+                    }
+                }
+            }
+        },
+        "/materiales/crearTipoMaterial": {
             "post": {
-                "security": [{
-                    "JWT TOKEN TRANSACCIONAL":[]
-                }],
-                "tags": ["tipos"],
-                "summary": "Agregar tipo",
+                "summary": "Crear un tipo de material.",
+                "tags": ["materiales"],
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "aplication/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/tipo"
+                               "type": "object",
+                               "properties": {
+                                   "tipoNombre": {
+                                       "type": "string"
+                                   }
+                               }
                             },
                             "example": {
-                                "name": "Nuevo Tipo"
+                                "tipoNombre": "nuevo tipo de material"
                             }
                         }
                     }
@@ -891,376 +759,706 @@
                         "content": {
                             "aplication/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/tipo"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Error-401"
-                    }
-                }
-            }
-        },
-        "/inventario/updateTipo": {
-            "put": {
-                "security": [{
-                    "JWT TOKEN TRANSACCIONAL":[]
-                }],
-                "tags": ["tipos"],
-                "summary": "Actualizar tipo",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "codigo": {
-                                        "type": "string",
-                                        "description": "Codigo del tipo"
-                                    },
-                                    "tipoName": {
-                                        "type": "string",
-                                        "description": "Nuevo nombre del tipo"
-                                    }
-                                }
-                            },
-                            "example": {
-                                "codigo": "123123",
-                                "tipoName": "Tipo Editado"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Ok",
-                        "content": {
-                            "aplication/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tipo"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Error-401"
-                    }
-                }
-            }
-        },
-        "/inventario/deleteTipo/{codigo}": {
-            "delete": {
-                "security": [{
-                    "JWT TOKEN TRANSACCIONAL":[]
-                }],
-                "parameters": [{
-                    "name": "codigo",
-                    "in": "path",
-                    "required": true,
-                    "allowEmptyValue": false,
-                    "example": "123456",
-                    "schema": {
-                        "type": "string",
-                        "description": "Codigo del tipo que deseamos eliminar"
-                    }
-                }],
-                "tags": ["tipos"],
-                "summary": "Elimina el tipo y todos los sub-tipos e items dentro del él.",
-                "responses": {
-                    "200": {
-                        "description": "Ok, Tipo eliminado",
-                        "content": {
-                            "aplication/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/tipo"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Error-401"
-                    }
-                }
-            }
-        },
-        "/inventario/getSubTipos/{nameTipo}": {
-            "get": {
-                "tags": ["tipos"],
-                "summary": "Optener todos los sub-tipos",
-                "parameters": [{
-                    "name": "nameTipo",
-                    "in": "path",
-                    "required": true,
-                    "allowEmptyValue": false,
-                    "example": "Pro. Respiratoria",
-                    "schema": {
-                        "type": "string",
-                        "description": "Nombre del tipo que deseamos"
-                    }
-                }],
-                "responses": {
-                    "200": {
-                        "description": "Ok",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
+                                    "type": "object",
                                     "properties": {
-                                        "subTipo": {
-                                            "type": "array",
-                                                "items": {
-                                                    "type": "string"
-                                                }
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "nuevoTipo": {
+                                            "$ref": "#/components/schemas/tipo_material"
                                         }
-                                    },
-                                    "example": {
-                                        "subTipo": [
-                                            "Respiradores 3M",
-                                            "Filtros 3M"
-                                        ]
                                     }
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
                     }
                 }
             }
         },
-        "/inventario/addSubTipo": {
-            "put": {
-                "security": [{
-                    "JWT TOKEN TRANSACCIONAL":[]
-                }],
-                "tags": ["tipos"],
-                "summary": "Agregar sub-tipo",
+        "/materiales/editarTipo": {
+            "post": {
+                "summary": "Editar un tipo de material.",
+                "tags": ["materiales"],
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application/json": {
+                        "aplication/json": {
                             "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "codigo": {
-                                        "type": "string",
-                                        "description": "Codigo del tipo"
-                                    },
-                                    "subTipo": {
-                                        "type": "string",
-                                        "description": "Nombre del sub-tipo"
-                                    }
-                                }
+                               "type": "object",
+                               "properties": {
+                                   "tipoNombre": {
+                                       "type": "string"
+                                   },
+                                   "codTipoMaterial": {
+                                       "type": "number"
+                                   }
+                               }
                             },
                             "example": {
-                                "codigo": "123123",
-                                "subTipo": "SubTipo Nuevo"
+                                "tipoNombre": "nuevo tipo de material",
+                                "codTipoMaterial": 1
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                       "$ref": "#/components/responses/Succes"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Error-401"
-                    }
-                }
-            }
-        },
-        "/inventario/uptateSupTipos": {
-            "put": {
-                "security": [{
-                    "JWT TOKEN TRANSACCIONAL":[]
-                }],
-                "tags": ["tipos"],
-                "summary": "Editar sub-tipo",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "codigo": {
-                                        "type": "string",
-                                        "description": "Codigo del tipo"
-                                    },
-                                    "newSubName": {
-                                        "type": "string",
-                                        "description": "Nuevo nombre del sub-tipo"
-                                    },
-                                    "antiguoSubName": {
-                                        "type": "string",
-                                        "description": "Antiguo nombre del sub-tipo"
-                                    }
-                                }
-                            },
-                            "example": {
-                                "codigo": "123123",
-                                "newSubName": "SubTipo Nuevo",
-                                "antiguoSubName": "SubTipo Antiguo"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "$ref": "#/components/responses/Succes"
-                    },
-                    "401": {
-                        "$ref": "#/components/responses/Error-401"
-                    }
-                }
-            }
-        },
-        "/inventario/deleteSupTipo/{codigo}/{subTipoName}": {
-            "delete": {
-                "security": [{
-                    "JWT TOKEN TRANSACCIONAL":[]
-                }],
-                "parameters": [{
-                    "name": "codigo",
-                    "in": "path",
-                    "required": true,
-                    "allowEmptyValue": false,
-                    "example": "123456",
-                    "schema": {
-                        "type": "string",
-                        "description": "Codigo del tipo del sub-tipo que deseamos eliminar"
-                    }
-                },
-                {
-                    "name": "subTipoName",
-                    "in": "path",
-                    "required": true,
-                    "allowEmptyValue": false,
-                    "example": "Pro. Respiratoria",
-                    "schema": {
-                        "type": "string",
-                        "description": "Nombre del sub-tipo que se desea eliminar."
-                    }
-                }],
-                "tags": ["tipos"],
-                "summary": "Elimina el sub-tipo y todos los items dentro del él.",
-                "responses": {
-                    "200": {
-                        "description": "Ok, sub-tipo eliminado",
+                        "description": "Ok",
                         "content": {
                             "aplication/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/tipo"
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "nuevoTipo": {
+                                            "$ref": "#/components/schemas/tipo_material"
+                                        }
+                                    }
                                 }
                             }
                         }
                     },
-                    "401": {
-                        "$ref": "#/components/responses/Error-401"
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
                     }
                 }
             }
         },
-        "/inventario/getItem/cod/{codigo}": {
+        "/materiales/getSubTipo/{codSubTipoMaterial}": {
             "get": {
-                "tags": ["items"],
-                "parameters": [{
-                    "name": "codigo",
-                    "in": "path",
+                "summary": "Obtener un sub-tipo de material, con sus materiales.",
+                "tags": ["materiales"],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "allowEmptyValue": false,
+                        "name": "codSubTipoMaterial",
+                        "schema": {
+                            "type": "number",
+                            "description": "Codigo del sub-tipo de material requerido"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "aplication/json": {
+                                "schema": {
+                                   "$ref": "#/components/schemas/sub_tipo_material"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
+                    }
+                }
+            }
+        },
+        "/materiales/crearSubTipoMaterial": {
+            "post": {
+                "summary": "Crear un sub-tipo de material.",
+                "tags": ["materiales"],
+                "requestBody": {
                     "required": true,
-                    "allowEmptyValue": false,
-                    "example": "1SDRP4",
-                    "schema": {
-                        "type": "string",
-                        "description": "Codigo del item"
-                    }
-                }],
-                "summary": "Obtener un item",
-                "responses": {
-                    "200": {
-                        "description": "Ok",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/item"
-                                }
+                    "content": {
+                        "aplication/json": {
+                            "schema": {
+                               "type": "object",
+                               "properties": {
+                                   "subTipoNombre": {
+                                       "type": "string"
+                                   },
+                                   "codTipoMaterial": {
+                                        "type": "number"
+                                   }
+                               }
+                            },
+                            "example": {
+                                "subTipoNombre": "nuevo sub-tipo",
+                                "codTipoMaterial": 1
                             }
                         }
                     }
-                }
-            }
-        },
-        "/inventario/getItems": {
-            "get": {
-                "tags": ["items"],
-                "deprecated": true,
-                "summary": "Optener todos los items. No usar.",
+                },
                 "responses": {
                     "200": {
                         "description": "Ok",
                         "content": {
-                            "application/json": {
+                            "aplication/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/item"
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "nuevoSubTipo": {
+                                            "$ref": "#/components/schemas/sub_tipo_material"
+                                        }
                                     }
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
                     }
                 }
             }
         },
-        "/inventario/getItemsDestacados": {
-            "get": {
-                "tags": ["items"],
-                "summary": "Obtener los items destacados",
-                "responses": {
-                    "200": {
-                        "description": "Ok",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/item"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/inventario/getItemsByType/{nameTipo}": {
-            "get": {
-                "tags": ["items"],
-                "parameters": [{
-                    "name": "nameTipo",
-                    "in": "path",
+        "/materiales/editarSubTipo": {
+            "post": {
+                "summary": "Editar un sub-tipo de material.",
+                "tags": ["materiales"],
+                "requestBody": {
                     "required": true,
-                    "allowEmptyValue": false,
-                    "example": "Pro. Respiratoria",
-                    "schema": {
-                        "type": "string",
-                        "description": "Nombre del tipo que deseamos"
+                    "content": {
+                        "aplication/json": {
+                            "schema": {
+                               "type": "object",
+                               "properties": {
+                                   "tipoNombre": {
+                                       "type": "string"
+                                   },
+                                   "codTipoMaterial": {
+                                       "type": "number"
+                                   }
+                               }
+                            },
+                            "example": {
+                                "tipoNombre": "nuevo sub-tipo de material",
+                                "codTipoMaterial": 1
+                            }
+                        }
                     }
-                }],
-                "summary": "Obtener los items de un tipo",
+                },
                 "responses": {
                     "200": {
                         "description": "Ok",
                         "content": {
-                            "application/json": {
+                            "aplication/json": {
                                 "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/item"
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "nuevoSubTipo": {
+                                            "$ref": "#/components/schemas/sub_tipo_material"
+                                        }
                                     }
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
+                    }
+                }
+            }
+        },
+        "/materiales/getMaterial/{codMaterial}": {
+            "get": {
+                "summary": "Obtener un material, con sus variantes.",
+                "tags": ["materiales"],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "allowEmptyValue": false,
+                        "name": "codMaterial",
+                        "schema": {
+                            "type": "number",
+                            "description": "Codigo del material requerido"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "aplication/json": {
+                                "schema": {
+                                   "$ref": "#/components/schemas/material"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
+                    }
+                }
+            }
+        },
+        "/materiales/crearMaterial": {
+            "post": {
+                "summary": "Crear un material.",
+                "tags": ["materiales"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "aplication/json": {
+                            "schema": {
+                               "type": "object",
+                               "properties": {
+                                   "nombreMaterial": {
+                                       "type": "string"
+                                   },
+                                   "codSubTipoMaterial": {
+                                       "type": "number"
+                                   },
+                                   "descripcion": {
+                                        "type": "string"
+                                    },
+                                    "unidad_medida": {
+                                        "type": "string"
+                                    },
+                                    "unidad_medida_uso": {
+                                        "type": "string"
+                                    }
+                               }
+                            },
+                            "example": {
+                                "nombreMaterial": "nuevo material",
+                                "codSubTipoMaterial": 1,
+                                "descripcion": "una descripción",
+                                "unidad_medida": "UND",
+                                "unidad_medida_uso": "CMT"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "aplication/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "nuevoMaterial": {
+                                            "$ref": "#/components/schemas/material"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
+                    }
+                }
+            }
+        },
+        "/materiales/editarMaterial": {
+            "post": {
+                "summary": "Editar un material.",
+                "tags": ["materiales"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "aplication/json": {
+                            "schema": {
+                               "type": "object",
+                               "properties": {
+                                   "nombreMaterial": {
+                                       "type": "string"
+                                   },
+                                   "codMaterial": {
+                                       "type": "number"
+                                   },
+                                   "descripcion": {
+                                        "type": "string"
+                                    },
+                                    "unidad_medida": {
+                                        "type": "string"
+                                    },
+                                    "unidad_medida_uso": {
+                                        "type": "string"
+                                    }
+                               }
+                            },
+                            "example": {
+                                "nombreMaterial": "nuevo material",
+                                "codMaterial": 1,
+                                "descripcion": "una descripción",
+                                "unidad_medida": "UND",
+                                "unidad_medida_uso": "CMT"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "aplication/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "nuevoMaterial": {
+                                            "$ref": "#/components/schemas/material"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
+                    }
+                }
+            }
+        },
+        "/materiales/getMaterialDefinido/{codMaterialDefinido}": {
+            "get": {
+                "summary": "Obtener una variante de material, con sus productos.",
+                "tags": ["materiales"],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "allowEmptyValue": false,
+                        "name": "codMaterialDefinido",
+                        "schema": {
+                            "type": "number",
+                            "description": "Codigo de la variante requerida"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "aplication/json": {
+                                "schema": {
+                                   "$ref": "#/components/schemas/material_definido"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
+                    }
+                }
+            }
+        },
+        "/materiales/crearMaterialDefinido": {
+            "post": {
+                "summary": "Crear una variante de material.",
+                "tags": ["materiales"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "aplication/json": {
+                            "schema": {
+                               "type": "object",
+                               "properties": {
+                                   "nombre": {
+                                       "type": "string"
+                                   },
+                                   "codMaterial": {
+                                       "type": "number"
+                                   },
+                                   "codColor": {
+                                        "type": "number"
+                                    },
+                                    "codMarca": {
+                                        "type": "number"
+                                    },
+                                    "precio_por_unidad": {
+                                        "type": "number"
+                                    },
+                                    "descripcion": {
+                                        "type": "string"
+                                    }
+                               }
+                            },
+                            "example": {
+                                "nombre": "nombre variante",
+                                "codMaterial": 1,
+                                "codColor": 1,
+                                "codMarca": 1,
+                                "precio_por_unidad": 1,
+                                "descripcion": "Una descripción"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "aplication/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "nuevaVariante": {
+                                            "$ref": "#/components/schemas/material_definido"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
+                    }
+                }
+            }
+        },
+        "/materiales/editarMaterialDefinido": {
+            "post": {
+                "summary": "Editar una variante de material.",
+                "tags": ["materiales"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "aplication/json": {
+                            "schema": {
+                               "type": "object",
+                               "properties": {
+                                   "nombre": {
+                                       "type": "string"
+                                   },
+                                   "codMaterialDefinido": {
+                                       "type": "number"
+                                   },
+                                   "codColor": {
+                                        "type": "number"
+                                    },
+                                    "codMarca": {
+                                        "type": "number"
+                                    },
+                                    "precio_por_unidad": {
+                                        "type": "number"
+                                    },
+                                    "descripcion": {
+                                        "type": "string"
+                                    }
+                               }
+                            },
+                            "example": {
+                                "nombre": "nombre variante",
+                                "codMaterialDefinido": 1,
+                                "codColor": 1,
+                                "codMarca": 1,
+                                "precio_por_unidad": 1,
+                                "descripcion": "Una descripción"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "aplication/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "nuevaVariante": {
+                                            "$ref": "#/components/schemas/material_definido"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
+                    }
+                }
+            }
+        },
+        "/materiales/getVariantesMaterialFiltro": {
+            "post": {
+                "summary": "Filtrar lista de variantes de un material.",
+                "tags": ["materiales"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "aplication/json": {
+                            "schema": {
+                               "$ref": "#/components/schemas/filtro_material_definido"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "aplication/json": {
+                                "schema": {
+                                   "type": "array",
+                                   "items": {
+                                       "$ref": "#/components/schemas/material_definido"
+                                   }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
+                    }
+                }
+            }
+        },
+        "/materiales/getMaterialFisicosFiltro": {
+            "post": {
+                "summary": "Filtrar lista de productos de una variantes de material.",
+                "tags": ["materiales"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "aplication/json": {
+                            "schema": {
+                               "$ref": "#/components/schemas/filtro_material_definido"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "aplication/json": {
+                                "schema": {
+                                   "type": "array",
+                                   "items": {
+                                       "$ref": "#/components/schemas/material_fisico"
+                                   }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
+                    }
+                }
+            }
+        },
+        "/materiales/getColores": {
+            "get": {
+                "summary": "Obtener colores.",
+                "tags": ["utilidades"],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "aplication/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/color"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
+                    }
+                }
+            }
+        },
+        "/materiales/getColor/{codColor}": {
+            "get": {
+                "summary": "Obtener un color.",
+                "tags": ["utilidades"],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "required": true,
+                        "allowEmptyValue": false,
+                        "name": "codColor",
+                        "schema": {
+                            "type": "number",
+                            "description": "Codigo del color."
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "aplication/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/color"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
+                    }
+                }
+            }
+        },
+        "/materiales/insertarColor": {
+            "get": {
+                "summary": "Obtener un color.",
+                "tags": ["utilidades"],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "aplication/json": {
+                            "schema": {
+                               "type": "object",
+                               "properties": {
+                                   "subTipoNombre": {
+                                       "type": "string"
+                                   },
+                                   "codTipoMaterial": {
+                                        "type": "number"
+                                   }
+                               }
+                            },
+                            "example": {
+                                "subTipoNombre": "nuevo sub-tipo",
+                                "codTipoMaterial": 1
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ok",
+                        "content": {
+                            "aplication/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "mensaje": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/Error_400"
                     }
                 }
             }
