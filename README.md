@@ -1,5 +1,31 @@
-# loscreadoresbackend
+# Back-end para el sistema creador de prendas de Los Creadores
 
-Servidor Del Creador De Prendas Los Creadores
+Este proyecto back-end esta actuamente utilizando Node 14 con TypeScript.
 
-Versión actual: 0.0.1 - 06/08/2021
+## Documentación
+
+`EN CONSTRUCCIÓN`
+
+## Tecnologias Usadas
+
+* Node 14
+* Express
+* SQL
+* TypeScript
+* Azure
+* WebPack
+* Jest
+* Swagger
+
+## Proyectos Relacionados
+
+* [Front-END (React)](https://github.com/TacEtarip/sirioFront "Front End Para Inventario")
+
+## Comandos
+
+* `build`
+* `start`
+* `dev:start`
+* `test`
+
+`PROYECTO REALIZADO POR TAC ETARIP => LUIS HUERTAS; PARA LOS CREADORES CONTACTO EN: hu3rtas@outlook.com`
