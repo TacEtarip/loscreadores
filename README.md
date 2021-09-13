@@ -4,7 +4,7 @@ Este proyecto back-end esta actuamente utilizando Node 14 con TypeScript.
 
 ## Documentación
 
-`EN CONSTRUCCIÓN`
+* [Swagger Doc](https://app.swaggerhub.com/apis/TacEtarip/LosCreadores/0.0.2 "Front End Para Inventario")
 
 ## Tecnologias Usadas
 
