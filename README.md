@@ -19,7 +19,7 @@ Este proyecto back-end esta actuamente utilizando Node 14 con TypeScript.
 
 ## Proyectos Relacionados
 
-* [Front-END (React)](https://github.com/TacEtarip/sirioFront "Front End Para Inventario")
+* [Front-END (React)](https://github.com/TacEtarip/loscreadoresfront "Front End Para Inventario")
 
 ## Comandos
 
