@@ -2,10 +2,12 @@ import { Router } from 'express';
 import { Configuracion } from '../lib/interfaces';
 import { ConnectionPool } from 'mssql';
 import { helpersControladores } from '../controllers/helpers-control';
+import { loginControladores } from '../controllers/login-control';
 
 export const rutasHelpers = (configENV: Configuracion, pool: ConnectionPool): {router:Router, ruta: string} => {
     const router = Router();
     const ruta = '/helper';
+    const controladoresAuth = loginControladores(configENV, pool);
 
     const controladores = helpersControladores(configENV, pool);
 
@@ -16,7 +18,7 @@ export const rutasHelpers = (configENV: Configuracion, pool: ConnectionPool): {r
 
     router.get('/getUnidadesDeMedida', controladores.getUnidadesDeMedida);
 
-    router.get('/getColores', controladores.getColores);
+    router.get('/getColores', controladoresAuth.loginRequired, controladores.getColores);
 
     router.get('/getProveedores', controladores.getProveedores);
 

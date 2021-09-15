@@ -7,7 +7,6 @@ import { rutasHelpers } from './routes/helpers-routes';
 import { rutasLogin } from './routes/login-routes';
 import { rutasMateriales } from './routes/materiales-routes';
 import { Configuracion } from './lib/interfaces';
-import { ConeccionSQL } from './lib/connect-to-sql';
 import sql from 'mssql';
 import jwt from 'jsonwebtoken';
 import morgan from 'morgan';
@@ -15,11 +14,8 @@ import swaggerUI from 'swagger-ui-express';
 import swaggerDoc from '../documentation/swaggerDocument.json';
 
 
-export const app = async (configENV: Configuracion): Promise<express.Express> => {
-
-
-  const configuracionSQL = 
-  new ConeccionSQL(configENV.servidorSQL, configENV.usuarioSQL, configENV.passwordSQL, configENV.baseDeDatosSQL).getConfig;
+export const app = (configENV: Configuracion, pool: sql.ConnectionPool): 
+express.Express => {
 
   const app = express();
   app.use(helmet());
@@ -57,8 +53,6 @@ export const app = async (configENV: Configuracion): Promise<express.Express> =>
       }
   })
 
-  const pool = await sql.connect(configuracionSQL);
-
   const routesHelper = rutasHelpers(configENV, pool);
   const routesLogin = rutasLogin(configENV, pool);
   const routesMateriales = rutasMateriales(configENV, pool);
@@ -68,7 +62,9 @@ export const app = async (configENV: Configuracion): Promise<express.Express> =>
   app.use(routesMateriales.ruta, routesMateriales.router);
 
   app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc));
- 
+  app.get('/', (req, res) => {
+    res.redirect('/api-docs');
+  });
   return app;
 }
 

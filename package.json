@@ -4,7 +4,7 @@
   "description": "BackEnd de la app los creadores",
   "main": "./dist/main.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test jest --verbose --silent materiales-control.test.ts",
+    "test": "cross-env NODE_ENV=test jest --verbose --silent  helpers-control.test.ts",
     "start": "cross-env NODE_ENV=production node ./dist/main.js",
     "dev:start": "cross-env NODE_ENV=development npx ts-node-dev ./src/index.ts | bunyan",
     "build": "webpack --config webpack.prod.js"
@@ -27,6 +27,7 @@
     "@types/morgan": "^1.9.3",
     "@types/mssql": "^7.1.3",
     "@types/node": "^16.4.13",
+    "@types/supertest": "^2.0.11",
     "@types/swagger-ui-express": "^4.1.3",
     "@types/tedious": "^4.0.5",
     "@types/throng": "^5.0.1",

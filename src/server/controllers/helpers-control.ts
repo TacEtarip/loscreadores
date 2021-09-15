@@ -31,7 +31,7 @@ export const helpersControladores = (configENV: Configuracion, pool: sql.Connect
             .input('nombre', sql.VarChar(20), color.nombre).execute(agregarColorProcedure);
             res.json({mensaje: 'Color Agregado'});
         } catch (error) {
-            mandarError(error, res, configENV, 500);
+            return mandarError(error, res, configENV, 500);
         }
     };
 
